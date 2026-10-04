@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Товар — Раунд</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<div class="ticker" id="ticker" aria-hidden="true"></div>
+<header id="hdr"></header>
+
+<main id="top">
+  <div class="wrap" id="page"></div>
+  <section class="similar" id="similar" hidden><div class="wrap">
+    <div class="sec-head rv"><div><span class="sec-num">ещё в этой категории</span><h2>Посмотрите <em>также</em></h2></div></div>
+    <div class="sim" id="simList"></div></div>
+  </section>
+  <section class="contact" id="contact"></section>
+</main>
+
+<script src="assets/default-data.js"></script>
+<script src="assets/common.js"></script>
+<script>
+(async () => {
+  const D = await R.load();
+  const { esc, fmt, per } = R;
+  const M = D.months || 36;
+  const P = (D.products || []).filter(p => p && p.name);
+  const id = new URLSearchParams(location.search).get("id");
+  const p = P.find(x => x.id === id);
+  const catName = c => (D.categories || []).find(x => x.id === c)?.name || "";
+  R.chrome(D, false);
+  const page = document.getElementById("page");
+
+  if (!p) {
+    page.innerHTML = `<div class="notfound"><h1 class="p-title">Товар не найден</h1>
+      <p style="color:var(--ink-soft);margin-bottom:30px">Возможно, его уже убрали из каталога.</p>
+      <a class="btn btn--ink" href="index.html#catalog">Все цены ${R.arrow}</a></div>`;
+    R.motion(); return;
+  }
+
+  const name = R.fullName(p), out = p.inStock === false;
+  document.title = name + " — купить в Раунд";
+  const md = document.createElement("meta"); md.name = "description";
+  md.content = `${name} за ${fmt(p.price)}. Оригинал, гарантия 1 год, рассрочка до ${M} месяцев.`; document.head.appendChild(md);
+
+  const imgs = (p.images || []).filter(Boolean);
+  const vars = P.filter(x => x.name === p.name);
+  const specs = (p.specs || []).filter(s => s && (s.k || s.v));
+
+  page.innerHTML = `
+  <nav class="crumbs"><a href="index.html#catalog">← Все цены</a><span>/</span><span>${esc(catName(p.cat))}</span><span>/</span><span>${esc(p.name)}</span></nav>
+  <div class="pp">
+    <div class="gal rv">
+      <div class="gal__main" id="galMain">
+        ${imgs.length ? imgs.map((u, i) => `<img src="${esc(u)}" alt="${esc(name)}" class="${i ? "" : "on"}" ${i ? 'loading="lazy"' : ""}>`).join("")
+        : `<div class="gal__empty"><div class="bar"></div><div class="tag tag--ink"><div class="tag__string"></div><div class="tag__body">
+            <small>${esc(catName(p.cat))}</small><h3>${esc(name)}</h3><div class="price">${fmt(p.price)}</div></div></div></div>`}
+      </div>
+      ${imgs.length > 1 ? `<div class="gal__thumbs">${imgs.map((u, i) => `<button class="${i ? "" : "on"}" data-i="${i}" aria-label="Фото ${i + 1}"><img src="${esc(u)}" alt=""></button>`).join("")}</div>` : ""}
+    </div>
+
+    <div class="pinfo">
+      <span class="cat">${esc(catName(p.cat))}</span>
+      <h1 class="p-title">${esc(p.name)}</h1>
+      ${vars.length > 1 ? `<div class="vars">${vars.map(v => `<a href="${R.productUrl(v)}" class="${v.id === p.id ? "on" : ""}${v.inStock === false ? " out" : ""}">${esc(v.variant || "Базовая")}</a>`).join("")}</div>`
+        : (p.variant ? `<div class="vars"><a class="on">${esc(p.variant)}</a></div>` : "")}
+      <div class="pbox">
+        <span class="pbox__price" id="price" data-v="${p.price}">${fmt(p.price)}</span>
+        ${p.oldPrice ? `<span class="pbox__old">${fmt(p.oldPrice)}</span>` : ""}
+        <span class="pbox__per">${out ? "Сейчас нет в наличии — можем привезти под заказ" : per(p.price, M) + " в рассрочку на " + M + " мес, без первого взноса"}</span>
+      </div>
+      <div class="stock${out ? " out" : ""}"><b></b>${out ? "Под заказ" : "В наличии"}</div>
+      <div class="pact">
+        <button class="btn btn--ink" id="askBtn">${out ? "Узнать сроки" : "Спросить в Telegram"} ${R.arrow}</button>
+        <a class="btn btn--line" href="${R.tel(D.contacts.phone)}">Позвонить</a>
+      </div>
+      <ul class="perks">
+        <li><strong>Оригинал</strong>никаких копий</li>
+        <li><strong>1 год</strong>гарантия на заводской брак</li>
+        <li><strong>${M} мес</strong>рассрочка без первого взноса</li>
+      </ul>
+      ${p.description ? `<div class="pdesc rv"><h2>Описание</h2><p>${esc(p.description)}</p></div>` : ""}
+      ${specs.length ? `<div class="pspecs rv"><h2>Характеристики</h2><dl>${specs.map(s => `<dt>${esc(s.k)}</dt><span class="dots"></span><dd>${esc(s.v)}</dd>`).join("")}</dl></div>` : ""}
+    </div>
+  </div>`;
+
+  document.getElementById("askBtn").onclick = () => R.ask(D, p);
+  page.querySelectorAll(".gal__empty .tag").forEach(R.swing);
+
+  const main = document.getElementById("galMain");
+  page.querySelectorAll(".gal__thumbs button").forEach(b => b.onclick = () => {
+    const i = +b.dataset.i;
+    main.querySelectorAll("img").forEach((im, j) => im.classList.toggle("on", j === i));
+    page.querySelectorAll(".gal__thumbs button").forEach(x => x.classList.toggle("on", x === b));
+  });
+
+  const pr = document.getElementById("price");
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const v = +pr.dataset.v, t0 = performance.now();
+    const step = t => { const k = Math.min(1, (t - t0) / 900), e = 1 - Math.pow(1 - k, 3); pr.textContent = fmt(Math.round(v * e / 100) * 100); if (k < 1) requestAnimationFrame(step); else pr.textContent = fmt(v); };
+    requestAnimationFrame(step);
+  }
+
+  const sim = P.filter(x => x.cat === p.cat && x.name !== p.name && x.inStock !== false);
+  const seen = new Set(), pick = [];
+  for (const x of sim) { if (!seen.has(x.name)) { seen.add(x.name); pick.push(x); } if (pick.length === 4) break; }
+  if (pick.length) {
+    document.getElementById("similar").hidden = false;
+    document.getElementById("simList").innerHTML = pick.map((x, i) => `<a href="${R.productUrl(x)}" class="rv" style="transition-delay:${i * 80}ms">
+      ${x.images && x.images[0] ? `<div class="thumb"><img src="${esc(x.images[0])}" alt="" loading="lazy"></div>` : ""}
+      <small>${esc(x.variant)}</small><h3>${esc(x.name)}</h3><div class="price">${fmt(x.price)}</div></a>`).join("");
+  }
+  R.motion();
+})();
+</script>
+</body>
+</html>

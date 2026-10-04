@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Раунд — техника Apple и Samsung в Батайске и Аксае</title>
+<meta name="description" content="Оригинальные iPhone, Samsung, Apple Watch, AirPods и PlayStation в Батайске и Аксае. Рассрочка до 36 месяцев, гарантия 1 год.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<div class="ticker" id="ticker" aria-hidden="true"></div>
+<header id="hdr"></header>
+
+<main id="top">
+<section class="hero">
+  <div class="wrap hero__grid">
+    <div>
+      <div class="hero__kicker"><b></b><span id="kicker"></span></div>
+      <h1>
+        <span class="line"><span>Айфоны</span></span>
+        <span class="line"><span class="outline">и самсунги</span></span>
+        <span class="line"><span>в <em>рассрочку</em></span></span>
+      </h1>
+      <p class="hero__lead" id="lead"></p>
+      <div class="hero__cta">
+        <a class="btn btn--ink" href="#catalog">Смотреть цены
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn--line js-tg" href="#" target="_blank" rel="noopener">Написать в Telegram</a>
+      </div>
+    </div>
+
+    <div class="rack" aria-label="Популярные модели">
+      <div id="tags"></div>
+      <div class="badge" aria-hidden="true">
+        <svg viewBox="0 0 200 200"><defs><path id="c" d="M100,100 m-82,0 a82,82 0 1,1 164,0 a82,82 0 1,1 -164,0"/></defs>
+          <text font-family="JetBrains Mono" font-size="15" font-weight="600" letter-spacing="3.2" fill="#151412"><textPath href="#c" id="badgeText">РАССРОЧКА · БЕЗ ПЕРВОГО ВЗНОСА · ДО 36 МЕС ·</textPath></text></svg>
+        <div class="badge__mid">0 ₽<small>взнос</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="catalog" id="catalog">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div><span class="sec-num">01 / прайс</span><h2>Что есть<br>в <em>наличии</em></h2></div>
+    </div>
+    <div class="tools rv">
+      <div class="chips" id="chips"></div>
+      <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Поиск: 17 pro, ultra, 256…" autocomplete="off"></label>
+    </div>
+    <div class="tools rv" style="margin-top:-8px">
+      <div class="sort">Сортировка:
+        <button data-s="def" class="on">по моделям</button>
+        <button data-s="asc">дешевле</button>
+        <button data-s="desc">дороже</button>
+      </div>
+    </div>
+    <div class="list" id="list"></div>
+    <div class="empty" id="empty">Ничего не нашли. Напишите нам — привезём под заказ или подберём аналог.</div>
+    <div class="more"><button class="btn btn--line" id="moreBtn">Показать все</button></div>
+    <p class="note">Нажмите на товар, чтобы открыть его страницу. Уточняйте наличие по телефону. Платёж в месяц — примерный расчёт, точные условия рассрочки зависят от банка.</p>
+  </div>
+</section>
+
+<section class="why" id="why">
+  <div class="wrap">
+    <div class="sec-head rv"><div><span class="sec-num">02 / условия</span><h2>Почему<br>в <em>Раунд</em></h2></div></div>
+    <div class="facts">
+      <div class="fact rv"><span class="fact__big">100<sub>%</sub></span><h3>Только оригинал</h3><p>Никаких копий и «почти как настоящих». Продаём оригинальные устройства и отвечаем за качество.</p></div>
+      <div class="fact rv"><span class="fact__big">1<sub>год</sub></span><h3>Гарантия на новую технику</h3><p>Гарантия 1 год на заводской брак. Если что-то пойдёт не так — приходите в магазин, разберёмся.</p></div>
+      <div class="fact rv"><span class="fact__big" id="monthsBig">36<sub>мес</sub></span><h3>Рассрочка без первого взноса</h3><p>Берёте телефон сегодня, платите частями. Подробности расскажем по телефону.</p></div>
+      <div class="fact rv"><span class="fact__big">3<sub>мес</sub></span><h3>Гарантия на Б/У</h3><p>Даже подержанные устройства уходят от нас с гарантией.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="used" id="used">
+  <div class="wrap used__grid">
+    <div class="rv">
+      <span class="sec-num">03 / б/у</span>
+      <h2>Б/У iPhone<br>под ваш <em>бюджет</em></h2>
+      <p class="lead" id="usedLead"></p>
+      <ul>
+        <li>Гарантия <span>3 месяца</span></li>
+        <li>Подбор под бюджет <span>бесплатно</span></li>
+        <li>Можно забронировать <span>по телефону</span></li>
+      </ul>
+      <div class="hero__cta" style="opacity:1;animation:none;margin-top:30px">
+        <a class="btn btn--ink js-tel" href="#">Забронировать
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+    <div class="phone-stack rv" id="stack" aria-hidden="true">
+      <div class="ph" data-l="проверен"><b>13</b></div>
+      <div class="ph" data-l="с гарантией"><b>14</b></div>
+      <div class="ph" data-l="под бюджет"><b>15</b></div>
+    </div>
+  </div>
+</section>
+
+<section class="give" id="give">
+  <div class="wrap">
+    <div class="ticket rv">
+      <div class="ticket__l">
+        <span class="sec-num">04 / розыгрыш каждый месяц</span>
+        <h2 id="giveTitle"></h2>
+        <div class="prizes" id="prizes"></div>
+      </div>
+      <div class="ticket__r">
+        <ol class="steps" id="steps"></ol>
+        <p id="giveNote"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact"></section>
+</main>
+
+<script src="assets/default-data.js"></script>
+<script src="assets/common.js"></script>
+<script>
+(async () => {
+  const D = await R.load();
+  const { esc, md, fmt, per } = R;
+  const M = D.months || 36;
+  const cats = D.categories || [];
+  const P = (D.products || []).filter(p => p && p.name);
+  const byId = Object.fromEntries(P.map(p => [p.id, p]));
+
+  R.chrome(D, true);
+
+  document.getElementById("kicker").textContent = D.hero.kicker || "";
+  document.getElementById("lead").innerHTML = md(D.hero.lead);
+  document.getElementById("badgeText").textContent = `РАССРОЧКА · БЕЗ ПЕРВОГО ВЗНОСА · ДО ${M} МЕС ·`;
+  document.getElementById("monthsBig").innerHTML = M + "<sub>мес</sub>";
+  document.querySelectorAll(".js-tg").forEach(a => a.href = D.contacts.telegram);
+  document.querySelectorAll(".js-tel").forEach(a => a.href = R.tel(D.contacts.phone));
+
+  const styles = ["tag--ink", "tag--signal", ""];
+  const tags = (D.hero.tags || []).map(t => ({ ...t, p: byId[t.product] })).filter(t => t.p).slice(0, 3);
+  document.getElementById("tags").innerHTML = tags.map((t, i) => `
+    <a class="tag ${styles[i]}" href="${R.productUrl(t.p)}" style="--d:${i * .12}s">
+      <div class="tag__string"></div><div class="tag__body">
+      <small>${esc(t.label)}</small><h3>${esc(R.fullName(t.p))}</h3>
+      <div class="price">${fmt(t.p.price)}</div><div class="per">${per(t.p.price, M).replace("/мес", " × " + M + " мес").replace(" ₽ × ", " ₽ × ")}</div></div></a>`).join("");
+  document.querySelectorAll(".tag").forEach(R.swing);
+
+  document.getElementById("usedLead").innerHTML = md(D.used.lead);
+
+  const G = D.giveaway || {};
+  if (!G.show) document.getElementById("give").remove();
+  else {
+    document.getElementById("giveTitle").textContent = G.title || "";
+    document.getElementById("prizes").innerHTML = (G.prizes || []).filter(Boolean).map(x => `<span>${esc(x)}</span>`).join("");
+    document.getElementById("steps").innerHTML = (G.steps || []).filter(Boolean).map(x => `<li>${esc(x)}</li>`).join("");
+    document.getElementById("giveNote").textContent = G.note || "";
+  }
+
+  let cat = "all", q = "", sort = "def", showAll = false;
+  const LIMIT = 12;
+  const list = document.getElementById("list"), empty = document.getElementById("empty"), moreBtn = document.getElementById("moreBtn");
+  const chips = document.getElementById("chips");
+  [{ id: "all", name: "Всё" }, ...cats].forEach(c => {
+    const n = c.id === "all" ? P.length : P.filter(p => p.cat === c.id).length;
+    if (!n) return;
+    const b = document.createElement("button");
+    b.className = "chip" + (c.id === "all" ? " on" : "");
+    b.innerHTML = esc(c.name) + "<sup>" + n + "</sup>";
+    b.onclick = () => { cat = c.id; showAll = false; chips.querySelectorAll(".chip").forEach(x => x.classList.toggle("on", x === b)); render(); };
+    chips.appendChild(b);
+  });
+  document.getElementById("q").addEventListener("input", e => { q = e.target.value.trim().toLowerCase().replace(/ё/g, "е"); render(); });
+  document.querySelectorAll(".sort button").forEach(b => b.onclick = () => { sort = b.dataset.s; document.querySelectorAll(".sort button").forEach(x => x.classList.toggle("on", x === b)); render(); });
+  moreBtn.onclick = () => { showAll = !showAll; render(); };
+
+  function render() {
+    let r = P.filter(p => (cat === "all" || p.cat === cat) && (!q || R.fullName(p).toLowerCase().replace(/ё/g, "е").includes(q)));
+    if (sort === "asc") r = [...r].sort((a, b) => a.price - b.price);
+    if (sort === "desc") r = [...r].sort((a, b) => b.price - a.price);
+    r = [...r.filter(p => p.inStock !== false), ...r.filter(p => p.inStock === false)];
+    const total = r.length, cut = (showAll || q) ? r : r.slice(0, LIMIT);
+    list.innerHTML = cut.map((p, i) => {
+      const out = p.inStock === false;
+      return `<a class="row${out ? " row--out" : ""}" href="${R.productUrl(p)}" style="animation-delay:${Math.min(i, 14) * 35}ms">
+      <span class="row__i">${String(i + 1).padStart(2, "0")}</span>
+      <span class="row__name">${esc(p.name)}${p.variant ? `<span>${esc(p.variant)}</span>` : ""}</span>
+      <span class="row__per">${out ? "под заказ" : per(p.price, M)}</span>
+      <span class="row__price">${p.oldPrice ? `<s>${fmt(p.oldPrice)}</s>` : ""}${fmt(p.price)}</span>
+      <span class="row__go">${R.arrow}</span></a>`;
+    }).join("");
+    empty.style.display = total ? "none" : "block";
+    moreBtn.parentElement.style.display = (q || total <= LIMIT) ? "none" : "flex";
+    moreBtn.textContent = showAll ? "Свернуть" : `Показать все ${total}`;
+  }
+  render();
+
+  R.motion();
+  document.querySelectorAll(".facts .fact").forEach((f, i) => f.style.transitionDelay = (i % 2) * 120 + "ms");
+  if (location.hash) { const t = document.querySelector(location.hash); if (t) setTimeout(() => t.scrollIntoView(), 60); }
+})();
+</script>
+</body>
+</html>
