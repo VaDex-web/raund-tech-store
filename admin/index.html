@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Админка — Раунд</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;900&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#efebe2;--card:#fbf8f1;--paper-2:#e4dfd3;--ink:#151412;--soft:#6b665c;--line:#d3ccbd;
+  --g:#17a05a;--g-ink:#03200f;--g-soft:#dcefe2;--red:#c4391d;--red-soft:#f6dfd8;
+  --display:"Unbounded",system-ui,sans-serif;--body:"Golos Text",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font:400 16px/1.45 var(--body);-webkit-font-smoothing:antialiased;min-height:100vh}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+a{color:inherit}
+[hidden]{display:none!important}
+.wrap{width:min(1080px,100% - 32px);margin-inline:auto}
+
+.login{min-height:100vh;display:grid;place-items:center;padding:24px}
+.login form{width:min(380px,100%);background:var(--card);border:1.5px solid var(--ink);border-radius:20px;padding:34px 28px;box-shadow:8px 10px 0 var(--ink);animation:pop .6s var(--ease)}
+@keyframes pop{from{opacity:0;transform:translateY(20px) rotate(-1deg)}to{opacity:1;transform:none}}
+.logo{display:flex;align-items:center;gap:10px;font:900 22px/1 var(--display);letter-spacing:-.03em}
+.logo i{width:28px;height:28px;border-radius:50%;border:3px solid var(--ink);position:relative;display:block}
+.logo i::after{content:"";position:absolute;inset:5px;border-radius:50%;background:var(--g)}
+.login h1{font:700 15px/1.3 var(--body);color:var(--soft);margin:18px 0 22px}
+.login .err{color:var(--red);font-size:14px;margin-top:10px;min-height:20px}
+
+label.f{display:block;margin-bottom:16px}
+label.f > span{display:block;font:500 13px/1.3 var(--body);color:var(--soft);margin-bottom:6px}
+label.f > small{display:block;font-size:12.5px;color:var(--soft);margin-top:5px}
+.in{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:#fff;transition:border-color .2s,box-shadow .2s;font-size:16px}
+.in:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px var(--g-soft)}
+textarea.in{resize:vertical;min-height:90px;line-height:1.45}
+.in.bad{border-color:var(--red);background:var(--red-soft)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:40px;font-weight:600;font-size:15px;transition:transform .2s var(--ease),background .2s,color .2s;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn--ink{background:var(--ink);color:var(--paper)}
+.btn--ink:hover{background:#2b2925}
+.btn--g{background:var(--g);color:var(--g-ink)}
+.btn--g:hover{background:#1bb366}
+.btn--line{border:1.5px solid var(--ink)}
+.btn--line:hover{background:var(--paper-2)}
+.btn--ghost{color:var(--soft)}
+.btn--ghost:hover{color:var(--ink);background:var(--paper-2)}
+.btn--danger{color:var(--red)}
+.btn--danger:hover{background:var(--red-soft)}
+.btn--wide{width:100%}
+.btn:disabled{opacity:.5;pointer-events:none}
+
+.sw{position:relative;display:inline-flex;align-items:center;gap:10px;cursor:pointer;user-select:none;font-size:14px}
+.sw input{position:absolute;opacity:0;pointer-events:none}
+.sw i{width:44px;height:26px;border-radius:26px;background:var(--line);position:relative;transition:background .25s;flex:none}
+.sw i::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:transform .3s var(--ease)}
+.sw input:checked + i{background:var(--g)}
+.sw input:checked + i::after{transform:translateX(18px)}
+.sw input:focus-visible + i{box-shadow:0 0 0 3px var(--g-soft)}
+
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--paper) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top__in{display:flex;align-items:center;gap:12px;height:62px}
+.top .logo{font-size:19px}
+.top .logo em{font:500 12px var(--mono);font-style:normal;color:var(--soft);margin-left:4px;letter-spacing:0}
+.top__r{margin-left:auto;display:flex;gap:4px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:14px 0;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:10px 16px;border-radius:40px;border:1.5px solid var(--line);font-weight:500;font-size:15px;white-space:nowrap;transition:all .2s}
+.tab:hover{border-color:var(--ink)}
+.tab.on{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.demo{background:#fff3c4;border:1.5px solid #e2c55a;border-radius:14px;padding:12px 16px;font-size:14px;margin-top:16px}
+
+main{padding:10px 0 140px}
+.pane{animation:fade .35s var(--ease)}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:22px;margin-bottom:16px}
+.card h2{font:700 18px/1.2 var(--display);letter-spacing:-.03em;margin-bottom:6px}
+.card > p.hint{color:var(--soft);font-size:14px;margin-bottom:18px}
+h1.pt{font:900 clamp(24px,4vw,34px)/1 var(--display);letter-spacing:-.04em;text-transform:uppercase;margin:12px 0 18px}
+
+.ptools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.ptools .in{flex:1;min-width:180px}
+.ptools select.in{flex:0 0 auto;width:auto}
+.plist{background:var(--card);border:1.5px solid var(--line);border-radius:18px;overflow:hidden}
+.pgroup{padding:12px 18px 8px;font:600 12px/1 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--soft);background:var(--paper-2);border-top:1px solid var(--line)}
+.pgroup:first-child{border-top:0}
+.pi{display:grid;grid-template-columns:52px 1fr 140px auto 36px;gap:12px;align-items:center;padding:10px 12px 10px 18px;border-top:1px solid var(--line);transition:background .15s}
+.pgroup + .pi{border-top:0}
+.pi:hover{background:#fff}
+.pi__img{width:44px;height:44px;border-radius:10px;background:var(--paper-2);overflow:hidden;display:grid;place-items:center;font:700 11px var(--mono);color:var(--soft)}
+.pi__img img{width:100%;height:100%;object-fit:cover}
+.pi__name{min-width:0;text-align:left;cursor:pointer}
+.pi__name b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pi__name span{font-size:13px;color:var(--soft)}
+.pi__name:hover b{color:var(--g)}
+.pi__price{position:relative}
+.pi__price .in{padding:9px 30px 9px 12px;font:600 15px var(--mono);text-align:right}
+.pi__price::after{content:"₽";position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--soft);font:400 14px var(--mono)}
+.pi.out .pi__name b{color:var(--soft);text-decoration:line-through}
+.pi__go{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--soft);transition:background .2s,color .2s}
+.pi__go:hover{background:var(--ink);color:var(--paper)}
+.empty{padding:40px;text-align:center;color:var(--soft)}
+.cats{display:grid;gap:8px}
+.cats .c{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center}
+.cats .c small{font:400 12px var(--mono);color:var(--soft);white-space:nowrap}
+
+.ov{position:fixed;inset:0;background:rgba(21,20,18,.45);z-index:40;opacity:0;transition:opacity .3s;pointer-events:none}
+.ov.show{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--paper);z-index:41;transform:translateX(105%);transition:transform .45s var(--ease);display:flex;flex-direction:column;border-left:1.5px solid var(--ink)}
+.drawer.show{transform:none}
+.drawer__head{display:flex;align-items:center;gap:10px;padding:14px 16px 14px 22px;border-bottom:1px solid var(--line)}
+.drawer__head h2{font:700 17px/1.2 var(--display);letter-spacing:-.03em;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drawer__body{flex:1;overflow-y:auto;padding:22px}
+.drawer__foot{display:flex;gap:8px;flex-wrap:wrap;padding:14px 22px;border-top:1px solid var(--line)}
+.x{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:22px;line-height:1}
+.x:hover{background:var(--paper-2)}
+.sec{font:600 12px/1 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--soft);margin:26px 0 12px;display:flex;align-items:center;gap:10px}
+.sec::after{content:"";flex:1;height:1px;background:var(--line)}
+.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
+.ph{position:relative;aspect-ratio:1;border-radius:12px;border:1.5px solid var(--line);background:#fff;overflow:hidden}
+.ph img{width:100%;height:100%;object-fit:contain}
+.ph .acts{position:absolute;inset:auto 6px 6px 6px;display:flex;gap:4px;justify-content:center;opacity:0;transition:opacity .2s}
+.ph:hover .acts,.ph:focus-within .acts{opacity:1}
+.ph .acts button{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--paper);font-size:14px}
+.ph .main{position:absolute;top:6px;left:6px;font:600 10px var(--mono);background:var(--g);color:var(--g-ink);padding:3px 7px;border-radius:20px}
+.add-ph{aspect-ratio:1;border-radius:12px;border:1.5px dashed var(--soft);display:grid;place-items:center;text-align:center;font-size:13px;color:var(--soft);cursor:pointer;transition:border-color .2s,color .2s,background .2s;padding:8px}
+.add-ph:hover{border-color:var(--g);color:var(--g);background:var(--g-soft)}
+.add-ph b{display:block;font-size:26px;line-height:1}
+.add-ph.busy{pointer-events:none;opacity:.6}
+.specs{display:grid;gap:8px}
+.spec{display:grid;grid-template-columns:1fr 1fr 36px;gap:8px}
+.list-edit{display:grid;gap:8px}
+.li{display:grid;grid-template-columns:1fr 36px;gap:8px}
+.li.stores{grid-template-columns:140px 1fr 36px}
+.del{width:36px;height:44px;border-radius:10px;color:var(--soft);font-size:18px}
+.del:hover{background:var(--red-soft);color:var(--red)}
+.tagrow{display:grid;grid-template-columns:1.4fr 1fr;gap:10px;padding:14px;border-radius:14px;border:1.5px solid var(--line);margin-bottom:10px;background:#fff}
+.tagrow b{grid-column:1/-1;font:600 12px var(--mono);color:var(--soft);text-transform:uppercase;letter-spacing:.06em}
+
+.savebar{position:fixed;left:50%;bottom:18px;transform:translate(-50%,160%);z-index:30;background:var(--ink);color:var(--paper);border-radius:20px;padding:10px 10px 10px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);transition:transform .45s var(--ease);width:max-content;max-width:calc(100% - 24px)}
+.savebar{visibility:hidden}
+.savebar.show{transform:translate(-50%,0);visibility:visible}
+.savebar span{font-size:14px}
+.savebar span b{display:inline-block;width:8px;height:8px;border-radius:50%;background:#f5c542;margin-right:8px;vertical-align:1px}
+.savebar .btn--ghost{color:#b9b3a6}
+.savebar .btn--ghost:hover{background:#2b2925;color:var(--paper)}
+.toast{position:fixed;left:50%;top:18px;transform:translate(-50%,-160%);z-index:60;background:var(--card);border:1.5px solid var(--ink);border-radius:14px;padding:12px 18px;font-weight:500;box-shadow:5px 6px 0 var(--ink);transition:transform .45s var(--ease);max-width:calc(100% - 24px)}
+.toast{visibility:hidden}
+.toast.show{transform:translate(-50%,0);visibility:visible}
+.toast.ok{border-color:var(--g);box-shadow:5px 6px 0 var(--g)}
+.toast.bad{border-color:var(--red);box-shadow:5px 6px 0 var(--red)}
+
+@media (max-width:640px){
+  .pi{grid-template-columns:44px 1fr 108px;grid-template-rows:auto auto;padding:12px 12px 12px 14px;gap:6px 10px}
+  .pi__img{width:44px;height:44px;grid-row:1/3}
+  .pi__price{grid-column:3}
+  .pi .sw{grid-column:2;grid-row:2;font-size:13px}
+  .pi__go{display:none}
+  .row2{grid-template-columns:1fr}
+  .li.stores{grid-template-columns:1fr 36px}
+  .li.stores .in:first-child{grid-column:1/2}
+  .li.stores .in:nth-child(2){grid-column:1/2}
+  .li.stores .del{grid-row:1/3;grid-column:2;height:auto}
+  .tagrow{grid-template-columns:1fr}
+  .drawer{border-left:0}
+  .top .logo em{display:none}
+  .pi__name b{white-space:normal}
+  .savebar{left:12px;right:12px;width:auto;transform:translateY(160%);padding:10px 10px 10px 16px}
+  .savebar.show{transform:none}
+  .savebar span{flex:1;font-size:13px;line-height:1.25}
+  .savebar #undo{padding:12px 10px}
+}
+</style>
+</head>
+<body>
+
+<section class="login" id="login">
+  <form id="loginForm" autocomplete="on">
+    <div class="logo"><i></i>раунд</div>
+    <h1>Вход в управление сайтом</h1>
+    <input type="text" name="username" value="admin" autocomplete="username" hidden>
+    <label class="f"><span>Пароль</span><input class="in" type="password" id="pass" autocomplete="current-password" required></label>
+    <button class="btn btn--ink btn--wide" id="loginBtn">Войти</button>
+    <div class="err" id="loginErr"></div>
+  </form>
+</section>
+
+<div id="app" hidden>
+  <div class="top"><div class="wrap top__in">
+    <div class="logo"><i></i>раунд <em>админка</em></div>
+    <div class="top__r">
+      <a class="btn btn--ghost" href="../index.html" target="_blank" rel="noopener">Открыть сайт ↗</a>
+      <button class="btn btn--ghost" id="logout">Выйти</button>
+    </div>
+  </div></div>
+  <div class="wrap">
+    <div class="demo" id="demo" hidden><b>Демо-режим.</b> Файл открыт с компьютера, поэтому изменения не сохраняются на сайт. Сохранение заработает, когда сайт будет на хостинге Netlify. Сейчас можно всё попробовать и скачать копию данных во вкладке «Резервная копия».</div>
+    <nav class="tabs" id="tabs">
+      <button class="tab on" data-t="products">Товары</button>
+      <button class="tab" data-t="home">Главная</button>
+      <button class="tab" data-t="contacts">Контакты</button>
+      <button class="tab" data-t="texts">Розыгрыш и тексты</button>
+      <button class="tab" data-t="backup">Резервная копия</button>
+    </nav>
+  </div>
+  <main class="wrap" id="main"></main>
+</div>
+
+<div class="ov" id="ov"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer__head"><h2 id="dTitle">Товар</h2><button class="x" id="dClose" aria-label="Закрыть">×</button></div>
+  <div class="drawer__body" id="dBody"></div>
+  <div class="drawer__foot">
+    <button class="btn btn--ink" id="dDone">Готово</button>
+    <button class="btn btn--line" id="dDup">Дублировать</button>
+    <a class="btn btn--ghost" id="dView" target="_blank" rel="noopener">Страница ↗</a>
+    <button class="btn btn--danger" id="dDel" style="margin-left:auto">Удалить</button>
+  </div>
+</aside>
+
+<div class="savebar" id="savebar"><span><b></b>Есть несохранённые изменения</span>
+  <button class="btn btn--ghost" id="undo">Отменить</button>
+  <button class="btn btn--g" id="save">Сохранить</button></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/default-data.js"></script>
+<script>
+(() => {
+const LIVE = /^https?:$/.test(location.protocol);
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const clone = o => JSON.parse(JSON.stringify(o));
+const ss = { get(k) { try { return sessionStorage.getItem(k) } catch (e) { return null } }, set(k, v) { try { sessionStorage.setItem(k, v) } catch (e) { } }, del(k) { try { sessionStorage.removeItem(k) } catch (e) { } } };
+
+let PASS = "", D = null, SAVED = null, dirty = false, tab = "products", filter = { q: "", cat: "" }, editIdx = -1;
+
+let tt;
+function toast(msg, kind = "") {
+  const t = $("#toast"); t.className = "toast " + kind; t.textContent = msg;
+  requestAnimationFrame(() => t.classList.add("show"));
+  clearTimeout(tt); tt = setTimeout(() => t.classList.remove("show"), 3200);
+}
+
+async function api(path, opts = {}) {
+  const r = await fetch(path, { ...opts, headers: { "x-admin-password": PASS, ...(opts.headers || {}) } });
+  let body = null; try { body = await r.json(); } catch (e) { }
+  if (!r.ok) throw new Error((body && body.error) || "Ошибка сервера (" + r.status + ")");
+  return body;
+}
+
+async function enter() {
+  if (LIVE) {
+    const d = await api("/api/data", { cache: "no-store" }).catch(() => null);
+    D = d && Array.isArray(d.products) ? d : clone(window.DEFAULT_DATA);
+  } else {
+    D = clone(window.DEFAULT_DATA);
+    $("#demo").hidden = false;
+  }
+  normalize(D);
+  SAVED = clone(D);
+  $("#login").hidden = true; $("#app").hidden = false;
+  render();
+}
+function normalize(d) {
+  d.categories ||= []; d.products ||= []; d.ticker ||= []; d.months ||= 36;
+  d.hero ||= {}; d.hero.tags ||= []; while (d.hero.tags.length < 3) d.hero.tags.push({ product: "", label: "" });
+  d.contacts ||= {}; d.contacts.stores ||= [];
+  d.used ||= {}; d.giveaway ||= { show: false, prizes: [], steps: [] };
+  d.products.forEach(p => { p.images ||= []; p.specs ||= []; if (p.inStock === undefined) p.inStock = true; });
+}
+$("#loginForm").onsubmit = async e => {
+  e.preventDefault();
+  const btn = $("#loginBtn"); btn.disabled = true; $("#loginErr").textContent = "";
+  PASS = $("#pass").value;
+  try {
+    if (LIVE) await api("/api/data?check=1", { method: "POST" });
+    ss.set("rp", PASS); await enter();
+  } catch (err) { $("#loginErr").textContent = err.message; }
+  btn.disabled = false;
+};
+$("#logout").onclick = () => { if (dirty && !confirm("Есть несохранённые изменения. Всё равно выйти?")) return; ss.del("rp"); dirty = false; location.reload(); };
+if (!LIVE) { $("#pass").required = false; $("#loginBtn").textContent = "Открыть демо"; }
+const saved = ss.get("rp");
+if (saved && LIVE) { PASS = saved; api("/api/data?check=1", { method: "POST" }).then(enter).catch(() => ss.del("rp")); }
+
+function setDirty(v = true) {
+  dirty = v; $("#savebar").classList.toggle("show", v);
+}
+addEventListener("beforeunload", e => { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
+$("#undo").onclick = () => { if (!confirm("Отменить все изменения с последнего сохранения?")) return; D = clone(SAVED); closeEditor(); setDirty(false); render(); toast("Изменения отменены"); };
+$("#save").onclick = save;
+
+function problems() {
+  const out = [];
+  D.products.forEach((p, i) => {
+    if (!String(p.name || "").trim()) out.push([i, "у товара нет названия"]);
+    else if (!(p.price > 0)) out.push([i, `у «${p.name} ${p.variant || ""}» не указана цена`]);
+  });
+  return out;
+}
+async function save() {
+  const pr = problems();
+  if (pr.length) { tab = "products"; render(); openEditor(pr[0][0]); toast("Исправьте: " + pr[0][1], "bad"); return; }
+  D.ticker = D.ticker.map(s => s.trim()).filter(Boolean);
+  D.giveaway.prizes = (D.giveaway.prizes || []).map(s => s.trim()).filter(Boolean);
+  D.giveaway.steps = (D.giveaway.steps || []).map(s => s.trim()).filter(Boolean);
+  D.products.forEach(p => { p.specs = p.specs.filter(s => s.k || s.v); if (!(p.oldPrice > 0)) p.oldPrice = null; });
+  if (!LIVE) { toast("Демо-режим: на хостинге здесь будет сохранение", "bad"); return; }
+  const b = $("#save"); b.disabled = true; b.textContent = "Сохраняю…";
+  try {
+    await api("/api/data", { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify(D) });
+    SAVED = clone(D); setDirty(false); toast("Сохранено. Сайт уже обновился ✓", "ok");
+    if (tab !== "products") render();
+  } catch (err) { toast(err.message, "bad"); }
+  b.disabled = false; b.textContent = "Сохранить";
+}
+
+function getPath(o, p) { return p.split(".").reduce((a, k) => a?.[k], o); }
+function setPath(o, p, v) { const ks = p.split("."); const last = ks.pop(); ks.reduce((a, k) => a[k], o)[last] = v; }
+function readVal(el) {
+  const t = el.dataset.type;
+  if (t === "num") { const n = parseInt(String(el.value).replace(/\D/g, ""), 10); return isNaN(n) ? null : n; }
+  if (t === "bool") return el.checked;
+  if (t === "lines") return el.value.split("\n");
+  return el.value;
+}
+function onField(e) {
+  const el = e.target.closest("[data-path]"); if (!el) return;
+  setPath(D, el.dataset.path, readVal(el)); setDirty();
+  el.classList.remove("bad");
+  if (el.dataset.type === "num" && e.type === "change" && el.value) el.value = Number(readVal(el) || 0).toLocaleString("ru-RU");
+  if (el.closest(".pi") && el.dataset.type === "bool") el.closest(".pi").classList.toggle("out", !el.checked);
+  if (el.closest("#dBody")) { updateDrawerHead(); if (e.type === "change") renderProductsList(); }
+}
+document.addEventListener("input", onField);
+document.addEventListener("change", onField);
+const fld = (label, path, opts = {}) => {
+  const v = getPath(D, path);
+  const val = opts.type === "lines" ? (v || []).join("\n") : opts.type === "num" ? (v ? Number(v).toLocaleString("ru-RU") : "") : (v ?? "");
+  const input = opts.area || opts.type === "lines"
+    ? `<textarea class="in" data-path="${path}" data-type="${opts.type || ""}" rows="${opts.rows || 4}" placeholder="${esc(opts.ph || "")}">${esc(val)}</textarea>`
+    : `<input class="in" data-path="${path}" data-type="${opts.type || ""}" value="${esc(val)}" placeholder="${esc(opts.ph || "")}" ${opts.type === "num" ? 'inputmode="numeric"' : ""}>`;
+  return `<label class="f"><span>${label}</span>${input}${opts.hint ? `<small>${opts.hint}</small>` : ""}</label>`;
+};
+const sw = (label, path) => `<label class="sw"><input type="checkbox" data-path="${path}" data-type="bool" ${getPath(D, path) ? "checked" : ""}><i></i>${label}</label>`;
+
+$("#tabs").onclick = e => { const b = e.target.closest(".tab"); if (!b) return; tab = b.dataset.t; render(); };
+function render() {
+  document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b.dataset.t === tab));
+  const m = $("#main");
+  m.innerHTML = `<div class="pane">${({ products: paneProducts, home: paneHome, contacts: paneContacts, texts: paneTexts, backup: paneBackup })[tab]()}</div>`;
+  if (tab === "products") renderProductsList();
+}
+const catName = id => D.categories.find(c => c.id === id)?.name || "Без категории";
+const catOptions = sel => D.categories.map(c => `<option value="${esc(c.id)}" ${c.id === sel ? "selected" : ""}>${esc(c.name)}</option>`).join("");
+
+function paneProducts() {
+  return `<h1 class="pt">Товары</h1>
+  <div class="ptools">
+    <input class="in" id="pq" type="search" placeholder="Найти товар…" value="${esc(filter.q)}">
+    <select class="in" id="pcat"><option value="">Все категории</option>${catOptions(filter.cat)}</select>
+    <button class="btn btn--g" id="addP">+ Добавить товар</button>
+  </div>
+  <p style="font-size:14px;color:var(--soft);margin:-2px 0 14px">Цену и наличие можно менять прямо в списке. Нажмите на название, чтобы открыть фото, описание и характеристики.</p>
+  <div class="plist" id="plist"></div>
+  <div class="card" style="margin-top:22px"><h2>Категории</h2><p class="hint">Кнопки-фильтры над прайсом на сайте. Удалить можно только пустую категорию.</p>
+    <div class="cats" id="cats">${D.categories.map((c, i) => {
+      const n = D.products.filter(p => p.cat === c.id).length;
+      return `<div class="c"><input class="in" data-path="categories.${i}.name" value="${esc(c.name)}"><small>${n} шт.</small>
+        <button class="del" data-delcat="${i}" title="Удалить" ${n ? "disabled style='opacity:.3'" : ""}>✕</button></div>`;
+    }).join("")}</div>
+    <button class="btn btn--line" id="addCat" style="margin-top:12px">+ Категория</button></div>`;
+}
+function renderProductsList() {
+  const box = $("#plist"); if (!box) return;
+  const q = filter.q.toLowerCase().replace(/ё/g, "е");
+  const items = D.products.map((p, i) => ({ p, i })).filter(({ p }) =>
+    (!filter.cat || p.cat === filter.cat) && (!q || (p.name + " " + (p.variant || "")).toLowerCase().replace(/ё/g, "е").includes(q)));
+  if (!items.length) { box.innerHTML = `<div class="empty">Ничего не найдено</div>`; return; }
+  const order = [...D.categories.map(c => c.id), ...new Set(items.map(x => x.p.cat).filter(c => !D.categories.some(k => k.id === c)))];
+  box.innerHTML = order.map(cid => {
+    const g = items.filter(x => x.p.cat === cid); if (!g.length) return "";
+    return `<div class="pgroup">${esc(catName(cid))} · ${g.length}</div>` + g.map(({ p, i }) => `
+      <div class="pi${p.inStock === false ? " out" : ""}">
+        <div class="pi__img">${p.images[0] ? `<img src="${esc(p.images[0])}" alt="" loading="lazy">` : "нет<br>фото"}</div>
+        <button class="pi__name" data-edit="${i}"><b>${esc(p.name || "Без названия")}</b><span>${esc(p.variant || "—")}</span></button>
+        <div class="pi__price"><input class="in" data-path="products.${i}.price" data-type="num" inputmode="numeric" value="${p.price ? Number(p.price).toLocaleString("ru-RU") : ""}" aria-label="Цена"></div>
+        <label class="sw"><input type="checkbox" data-path="products.${i}.inStock" data-type="bool" ${p.inStock !== false ? "checked" : ""}><i></i>в наличии</label>
+        <button class="pi__go" data-edit="${i}" aria-label="Открыть">›</button>
+      </div>`).join("");
+  }).join("");
+}
+document.addEventListener("click", e => {
+  const ed = e.target.closest("[data-edit]"); if (ed) { openEditor(+ed.dataset.edit); return; }
+  const dc = e.target.closest("[data-delcat]"); if (dc) { D.categories.splice(+dc.dataset.delcat, 1); setDirty(); render(); return; }
+  if (e.target.id === "addCat") { const name = prompt("Название категории, например «Планшеты»"); if (!name) return; D.categories.push({ id: "c" + Date.now().toString(36), name: name.trim() }); setDirty(); render(); return; }
+  if (e.target.id === "addP") {
+    D.products.unshift({ id: "p" + Date.now().toString(36), cat: filter.cat || D.categories[0]?.id || "", name: "", variant: "", price: null, oldPrice: null, inStock: true, description: "", specs: [], images: [] });
+    setDirty(); filter.q = ""; render(); openEditor(0); return;
+  }
+});
+document.addEventListener("input", e => {
+  if (e.target.id === "pq") { filter.q = e.target.value; renderProductsList(); }
+});
+document.addEventListener("change", e => { if (e.target.id === "pcat") { filter.cat = e.target.value; renderProductsList(); } });
+
+function openEditor(i) {
+  editIdx = i; drawerBody();
+  $("#ov").classList.add("show"); $("#drawer").classList.add("show"); $("#drawer").setAttribute("aria-hidden", "false");
+  setTimeout(() => { const n = $("#dBody [data-path$='.name']"); if (n && !n.value) n.focus(); }, 300);
+}
+function closeEditor() {
+  editIdx = -1; $("#ov").classList.remove("show"); $("#drawer").classList.remove("show"); $("#drawer").setAttribute("aria-hidden", "true");
+  renderProductsList();
+}
+function updateDrawerHead() {
+  const p = D.products[editIdx]; if (!p) return;
+  $("#dTitle").textContent = (p.name || "Новый товар") + (p.variant ? " · " + p.variant : "");
+}
+function drawerBody() {
+  const p = D.products[editIdx]; if (!p) return closeEditor();
+  const b = `products.${editIdx}`;
+  updateDrawerHead();
+  $("#dView").href = "../product.html?id=" + encodeURIComponent(p.id);
+  $("#dView").hidden = !SAVED.products.some(x => x.id === p.id);
+  $("#dBody").innerHTML = `
+    ${fld("Название модели", b + ".name", { ph: "Например: iPhone 17 Pro" })}
+    ${fld("Вариант", b + ".variant", { ph: "256 ГБ, цвет, размер…", hint: "Товары с одинаковым названием на сайте показываются как варианты одной модели." })}
+    <label class="f"><span>Категория</span><select class="in" data-path="${b}.cat">${catOptions(p.cat)}</select></label>
+    <div class="row2">
+      ${fld("Цена, ₽", b + ".price", { type: "num", ph: "99 900" })}
+      ${fld("Старая цена, ₽", b + ".oldPrice", { type: "num", ph: "необязательно", hint: "Покажется зачёркнутой рядом с ценой." })}
+    </div>
+    ${sw("В наличии", b + ".inStock")}
+
+    <div class="sec">Фото</div>
+    <div class="photos" id="photos">
+      ${p.images.map((u, k) => `<div class="ph">${k === 0 ? '<span class="main">главное</span>' : ""}<img src="${esc(u)}" alt="">
+        <div class="acts">${k ? `<button data-ph="left" data-k="${k}" title="Левее">←</button>` : ""}${k < p.images.length - 1 ? `<button data-ph="right" data-k="${k}" title="Правее">→</button>` : ""}<button data-ph="del" data-k="${k}" title="Удалить">✕</button></div></div>`).join("")}
+      <label class="add-ph" id="addPh"><input type="file" accept="image/*" multiple hidden id="phInput"><span><b>+</b>Добавить фото</span></label>
+    </div>
+    <small style="display:block;color:var(--soft);font-size:12.5px;margin-top:8px">Первое фото — главное. Большие фото уменьшаются автоматически.${LIVE ? "" : " В демо-режиме фото не загружаются."}</small>
+
+    <div class="sec">Описание</div>
+    ${fld("Текст на странице товара", b + ".description", { area: true, rows: 5, ph: "Пара предложений о модели: чем хороша, что в комплекте…" })}
+
+    <div class="sec">Характеристики</div>
+    <div class="specs">${p.specs.map((s, k) => `<div class="spec">
+      <input class="in" data-path="${b}.specs.${k}.k" value="${esc(s.k)}" placeholder="Экран">
+      <input class="in" data-path="${b}.specs.${k}.v" value="${esc(s.v)}" placeholder="6,3″ OLED">
+      <button class="del" data-spec-del="${k}" title="Удалить">✕</button></div>`).join("")}</div>
+    <button class="btn btn--line" id="addSpec" style="margin-top:10px">+ Строка</button>`;
+  $("#phInput").onchange = e => uploadPhotos([...e.target.files]);
+}
+$("#ov").onclick = closeEditor; $("#dClose").onclick = closeEditor; $("#dDone").onclick = closeEditor;
+addEventListener("keydown", e => { if (e.key === "Escape" && editIdx > -1) closeEditor(); });
+$("#dDel").onclick = () => {
+  const p = D.products[editIdx];
+  if (!confirm(`Удалить «${(p.name + " " + (p.variant || "")).trim() || "товар"}»?`)) return;
+  D.hero.tags.forEach(t => { if (t.product === p.id) t.product = ""; });
+  D.products.splice(editIdx, 1); setDirty(); closeEditor(); toast("Товар удалён. Не забудьте сохранить.");
+};
+$("#dDup").onclick = () => {
+  const p = clone(D.products[editIdx]); p.id = "p" + Date.now().toString(36); p.variant = "";
+  D.products.splice(editIdx + 1, 0, p); setDirty(); openEditor(editIdx + 1); toast("Копия создана — укажите вариант и цену");
+};
+$("#dBody").addEventListener("click", e => {
+  const p = D.products[editIdx];
+  const ph = e.target.closest("[data-ph]");
+  if (ph) {
+    const k = +ph.dataset.k, a = p.images;
+    if (ph.dataset.ph === "del") a.splice(k, 1);
+    if (ph.dataset.ph === "left") [a[k - 1], a[k]] = [a[k], a[k - 1]];
+    if (ph.dataset.ph === "right") [a[k + 1], a[k]] = [a[k], a[k + 1]];
+    setDirty(); drawerBody(); return;
+  }
+  const sd = e.target.closest("[data-spec-del]"); if (sd) { p.specs.splice(+sd.dataset.specDel, 1); setDirty(); drawerBody(); return; }
+  if (e.target.id === "addSpec") { p.specs.push({ k: "", v: "" }); setDirty(); drawerBody(); $("#dBody .spec:last-child input").focus(); }
+});
+
+function shrink(file) {
+  return new Promise((res, rej) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const k = Math.min(1, 1600 / Math.max(img.width, img.height));
+      const c = document.createElement("canvas"); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      c.toBlob(b => b && b.type === "image/webp" ? res(b) : c.toBlob(j => j ? res(j) : rej(new Error("Не удалось обработать фото")), "image/jpeg", .86), "image/webp", .86);
+    };
+    img.onerror = () => rej(new Error("Это не похоже на фото"));
+    img.src = url;
+  });
+}
+async function uploadPhotos(files) {
+  if (!files.length) return;
+  if (!LIVE) { toast("Фото загружаются только на хостинге", "bad"); return; }
+  const id = D.products[editIdx].id, add = $("#addPh"); add.classList.add("busy");
+  add.querySelector("span").innerHTML = "<b>…</b>Загружаю";
+  let ok = 0;
+  for (const f of files) {
+    try {
+      const blob = await shrink(f);
+      const r = await api("/api/upload", { method: "POST", headers: { "content-type": blob.type }, body: blob });
+      const p = D.products.find(x => x.id === id); if (p) { p.images.push(r.url); ok++; }
+    } catch (err) { toast(f.name + ": " + err.message, "bad"); }
+  }
+  if (ok) { setDirty(); toast(`Загружено фото: ${ok}. Не забудьте сохранить.`, "ok"); }
+  if (D.products[editIdx]?.id === id) drawerBody();
+  renderProductsList();
+}
+
+function paneHome() {
+  const opts = sel => `<option value="">— не показывать —</option>` + D.categories.map(c => {
+    const ps = D.products.filter(p => p.cat === c.id && p.name);
+    return ps.length ? `<optgroup label="${esc(c.name)}">${ps.map(p => `<option value="${esc(p.id)}" ${p.id === sel ? "selected" : ""}>${esc((p.name + " " + (p.variant || "")).trim())} — ${Number(p.price || 0).toLocaleString("ru-RU")} ₽</option>`).join("")}</optgroup>` : "";
+  }).join("");
+  const colors = ["Чёрный ценник", "Зелёный ценник", "Белый ценник"];
+  return `<h1 class="pt">Главная</h1>
+  <div class="card"><h2>Ценники на первом экране</h2><p class="hint">Три товара, которые висят на верёвочках. Цена подтягивается из каталога автоматически.</p>
+    ${D.hero.tags.slice(0, 3).map((t, i) => `<div class="tagrow"><b>${colors[i]}</b>
+      <label class="f" style="margin:0"><span>Товар</span><select class="in" data-path="hero.tags.${i}.product">${opts(t.product)}</select></label>
+      <label class="f" style="margin:0"><span>Подпись сверху</span><input class="in" data-path="hero.tags.${i}.label" value="${esc(t.label)}" placeholder="Новинка"></label></div>`).join("")}
+  </div>
+  <div class="card"><h2>Тексты первого экрана</h2><p class="hint">Большой заголовок «Айфоны и самсунги в рассрочку» — часть дизайна, он не меняется.</p>
+    ${fld("Строка над заголовком", "hero.kicker", { ph: "Батайск · Аксай · с 10:00 до 20:00" })}
+    ${fld("Текст под заголовком", "hero.lead", { area: true, rows: 3, hint: "Чтобы выделить слова жирным, оберните их двумя звёздочками: **гарантия 1 год**" })}
+    ${fld("Рассрочка, месяцев", "months", { type: "num", hint: "По этому числу на сайте считается примерный платёж в месяц." })}
+  </div>
+  <div class="card"><h2>Бегущая строка</h2><p class="hint">Чёрная полоса в самом верху сайта. Каждая фраза — с новой строки.</p>
+    ${fld("Фразы", "ticker", { type: "lines", rows: 7 })}
+  </div>`;
+}
+
+function paneContacts() {
+  const c = "contacts";
+  return `<h1 class="pt">Контакты</h1>
+  <div class="card"><h2>Связь</h2><p class="hint">Используется в шапке, кнопках «Позвонить» и «Написать» и внизу сайта.</p>
+    ${fld("Телефон", c + ".phone", { ph: "+7 909 405-88-55", hint: "Пишите так, как он должен выглядеть на сайте." })}
+    ${fld("Часы работы", c + ".hours", { ph: "С 10:00 до 20:00" })}
+    ${fld("Ссылка на Telegram", c + ".telegram", { ph: "https://t.me/…" })}
+    ${fld("Ссылка на ВКонтакте", c + ".vk", { ph: "https://vk.ru/…", hint: "Оставьте пустым, чтобы скрыть." })}
+    ${fld("Ссылка на канал в MAX", c + ".max", { ph: "https://max.ru/…", hint: "Оставьте пустым, чтобы скрыть." })}
+  </div>
+  <div class="card"><h2>Магазины</h2><p class="hint">Город и адрес. Ссылка на Яндекс Карты создаётся сама.</p>
+    <div class="list-edit">${D.contacts.stores.map((s, i) => `<div class="li stores">
+      <input class="in" data-path="contacts.stores.${i}.city" value="${esc(s.city)}" placeholder="Город">
+      <input class="in" data-path="contacts.stores.${i}.address" value="${esc(s.address)}" placeholder="Улица, дом">
+      <button class="del" data-store-del="${i}" title="Удалить">✕</button></div>`).join("")}</div>
+    <button class="btn btn--line" id="addStore" style="margin-top:12px">+ Магазин</button>
+  </div>`;
+}
+document.addEventListener("click", e => {
+  const sd = e.target.closest("[data-store-del]");
+  if (sd) { D.contacts.stores.splice(+sd.dataset.storeDel, 1); setDirty(); render(); }
+  if (e.target.id === "addStore") { D.contacts.stores.push({ city: "", address: "" }); setDirty(); render(); }
+});
+
+function paneTexts() {
+  return `<h1 class="pt">Розыгрыш и тексты</h1>
+  <div class="card"><h2>Розыгрыш</h2><p class="hint">Зелёный «билет» на главной.</p>
+    <div style="margin-bottom:18px">${sw("Показывать розыгрыш на сайте", "giveaway.show")}</div>
+    ${fld("Заголовок", "giveaway.title", { ph: "Дарим подарки на 7 500 ₽" })}
+    ${fld("Призы", "giveaway.prizes", { type: "lines", rows: 4, hint: "Каждый приз — с новой строки." })}
+    ${fld("Как участвовать", "giveaway.steps", { type: "lines", rows: 4, hint: "Каждый шаг — с новой строки. Номера проставятся сами." })}
+    ${fld("Примечание мелким текстом", "giveaway.note")}
+  </div>
+  <div class="card"><h2>Блок «Б/У iPhone»</h2>
+    ${fld("Текст", "used.lead", { area: true, rows: 3, hint: "Можно выделять **жирным**." })}
+  </div>`;
+}
+
+function paneBackup() {
+  return `<h1 class="pt">Резервная копия</h1>
+  <div class="card"><h2>Скачать все данные</h2><p class="hint">Файл со всеми товарами, ценами и текстами. Полезно сохранять перед большими изменениями.</p>
+    <button class="btn btn--ink" id="exp">Скачать файл</button></div>
+  <div class="card"><h2>Восстановить из файла</h2><p class="hint">Заменит текущие данные содержимым файла. После загрузки проверьте и нажмите «Сохранить».</p>
+    <label class="btn btn--line">Выбрать файл<input type="file" accept=".json,application/json" id="imp" hidden></label></div>
+  ${D.updatedAt ? `<p style="color:var(--soft);font-size:14px">Последнее сохранение: ${new Date(D.updatedAt).toLocaleString("ru-RU")}</p>` : ""}`;
+}
+document.addEventListener("click", e => {
+  if (e.target.id !== "exp") return;
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(D, null, 1)], { type: "application/json" }));
+  a.download = "raund-dannye-" + new Date().toISOString().slice(0, 10) + ".json"; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+document.addEventListener("change", async e => {
+  if (e.target.id !== "imp" || !e.target.files[0]) return;
+  try {
+    const d = JSON.parse(await e.target.files[0].text());
+    if (!Array.isArray(d.products) || !d.contacts) throw new Error();
+    if (!confirm(`В файле ${d.products.length} товаров. Заменить текущие данные?`)) return;
+    normalize(d); D = d; setDirty(); toast("Данные загружены. Проверьте и сохраните.", "ok"); tab = "products"; render();
+  } catch (err) { toast("Не получилось прочитать файл", "bad"); }
+});
+})();
+</script>
+</body>
+</html>
